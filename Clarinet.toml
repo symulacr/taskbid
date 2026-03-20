@@ -8,25 +8,7 @@ cache_dir = "./.cache"
 [contracts.sip-010-trait]
 path = "contracts/sip-010-trait.clar"
 
-[contracts.mock-sbtc]
-path = "contracts/mock-sbtc.clar"
-depends_on = ["sip-010-trait"]
 
-[contracts.mock-usdcx]
-path = "contracts/mock-usdcx.clar"
-depends_on = ["sip-010-trait"]
-
-[contracts.task-registry]
-path = "contracts/task-registry.clar"
-depends_on = ["mock-sbtc", "mock-usdcx"]
-
-[contracts.taskbid-sbtc]
-path = "contracts/taskbid-sbtc.clar"
-depends_on = ["sip-010-trait"]
-
-[contracts.taskbid-usdcx]
-path = "contracts/taskbid-usdcx.clar"
-depends_on = ["sip-010-trait"]
 
 
 
