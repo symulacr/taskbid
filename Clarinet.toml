@@ -20,6 +20,44 @@ depends_on = ["sip-010-trait"]
 path = "contracts/task-registry.clar"
 depends_on = ["mock-sbtc", "mock-usdcx"]
 
+[contracts.taskbid-sbtc]
+path = "contracts/taskbid-sbtc.clar"
+depends_on = ["sip-010-trait"]
+
+[contracts.taskbid-usdcx]
+path = "contracts/taskbid-usdcx.clar"
+depends_on = ["sip-010-trait"]
+
+
+
+[contracts.sbtc]
+path = "contracts/sbtc.clar"
+depends_on = ["sip-010-trait"]
+
+[contracts.usdcx]
+path = "contracts/usdcx.clar"
+depends_on = ["sip-010-trait"]
+
+[contracts.registry]
+path = "contracts/registry.clar"
+depends_on = ["sbtc", "usdcx"]
+
+[contracts.faucet]
+path = "contracts/faucet.clar"
+depends_on = ["sbtc", "usdcx"]
+
+[contracts.oracle]
+path = "contracts/oracle.clar"
+depends_on = ["registry"]
+
+[contracts.scheduler]
+path = "contracts/scheduler.clar"
+depends_on = ["registry"]
+
+[contracts.router]
+path = "contracts/router.clar"
+depends_on = ["sbtc", "usdcx", "registry"]
+
 [repl.analysis]
 passes = ["check_checker"]
 check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
