@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# OMC internal state
+.omc/
+
+# Desloppify
+.desloppify/
+.venv/
+
+# Coverage
+.coverage
+.pytest_cache/
+.ruff_cache/
+*.png
+
+# Clarinet
+.cache/
+tmp/
+deployments/
+
+# Node
+node_modules/
+.vercel
+
+# Next.js
+.next/
+out/
+
+# Wallet files
+WALLETS.txt
+*.wallet
