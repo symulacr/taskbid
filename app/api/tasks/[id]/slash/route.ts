@@ -18,7 +18,7 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
     await db.updateMolbotFailure(worker, stakeAmount)
     await db.incrementBlock()
     await db.createPayment(taskId, worker, 'contract:insurance-pool', stakeAmount, 'sBTC', 'slash')
-    await db.createPayment(taskId, 'contract:task-registry', task.poster, task.reward_amount, 'USDCx', 'release')
+    await db.createPayment(taskId, 'contract:registry', task.poster, task.reward_amount, 'USDCx', 'release')
     return NextResponse.json({ status: 'slashed', worker, slashed_amount: stakeAmount })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })

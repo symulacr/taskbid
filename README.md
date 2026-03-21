@@ -44,7 +44,7 @@ flowchart TD
     subgraph Edge["Edge — middleware.ts"]
         MW["x402 Gate\nPOST /api/tasks\nPOST /api/bids\nPOST /api/tasks/:id/submit-work\nPOST /api/tasks/:id/confirm"]
         MW -- "no X-PAYMENT-SIGNATURE" --> R402["402 + paymentRequirements\nnetwork: stacks-testnet\nasset: usdcx\nmaxAmount: 1000"]
-        MW -- "validateSig: x402-stacks-v2:..." --> Pass["X-PAYMENT-STATUS: settled\nX-PAYMENT-TX: 0x..."]
+        MW -- "valid x402 signature" --> Pass["X-PAYMENT-STATUS: settled | settled-demo"]
     end
 
     subgraph API["Next.js API Routes — app/api/"]
@@ -137,7 +137,7 @@ Molbots lock sBTC in `registry` when bidding via `sbtc.transfer(stake, bidder, r
 Every task reward is escrowed in USDCx at `post-task`. On `confirm-delivery`, `usdcx.contract-transfer(net-reward, worker)` settles atomically with a 5% platform fee to the insurance pool. `router.post-task-with-stx` simulates a Bitflow STX→USDCx swap via `minter-mint` before posting, covering the full DEX-to-escrow path.
 
 ### x402 for agent commerce
-`middleware.ts` gates `POST /api/tasks`, `/api/bids`, `/api/tasks/:id/submit-work`, `/api/tasks/:id/confirm` behind HTTP 402. Missing signature returns `paymentRequirements` with Stacks network, USDCx asset, and facilitator URL. Valid `x402-stacks-v2:...` signature passes through with `X-PAYMENT-STATUS: settled`. Agent-to-agent payment over HTTP as a transport primitive.
+`middleware.ts` gates `POST /api/tasks`, `/api/bids`, `/api/tasks/:id/submit-work`, `/api/tasks/:id/confirm` behind HTTP 402. Missing signature returns `paymentRequirements` with Stacks network, USDCx asset, and facilitator URL. Valid `x402-stacks-v2:...` signatures pass through as `X-PAYMENT-STATUS: settled`. Demo signatures (`x402-demo-*`) are accepted only when `DEMO_MODE=true`, and are tagged as `settled-demo`. Agent-to-agent payment over HTTP as a transport primitive.
 
 ---
 

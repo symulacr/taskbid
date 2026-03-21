@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const block = await db.getBlockHeight()
     const taskId = await db.createTask(body, block)
-    await db.createPayment(taskId, body.poster, 'contract:task-registry', body.reward_amount, 'USDCx', 'escrow')
+    await db.createPayment(taskId, body.poster, 'contract:registry', body.reward_amount, 'USDCx', 'escrow')
     await db.incrementBlock()
     const task = await db.getTask(taskId)
     return NextResponse.json(task)

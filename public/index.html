@@ -3,116 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskBid — Autonomous Molbot Task Auction</title>
+  <title>TaskBid</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <h1 class="logo">TaskBid</h1>
-      <span class="tagline">Autonomous Molbot Task Auction on Stacks</span>
+
+  <!-- Fixed Header — single row -->
+  <header id="app-header">
+    <button id="btn-sidebar-toggle" class="icon-btn" title="Toggle sidebar">☰</button>
+    <span class="logo">TaskBid</span>
+    <div class="h-stats">
+      <span class="hstat net-live" id="stat-net">● Testnet</span>
+      <span class="hstat-sep">·</span>
+      <span class="hstat">B&thinsp;<span id="stat-block">—</span></span>
+      <span class="hstat-sep">·</span>
+      <span class="hstat">T&thinsp;<span id="sb-tasks">—</span></span>
+      <span class="hstat-sep">·</span>
+      <span class="hstat">A&thinsp;<span id="sb-active">—</span></span>
+      <span class="hstat-sep">·</span>
+      <span class="hstat">$<span id="sb-volume">—</span></span>
+      <span class="hstat-sep">·</span>
+      <span class="hstat">MB&thinsp;<span id="sb-molbots">—</span></span>
     </div>
-    <div class="header-right">
-      <div class="network-badge">
-        <span class="dot dot-live"></span>
-        Stacks Testnet
-      </div>
-      <button id="btn-connect-wallet" class="btn btn-primary">Connect Wallet</button>
-      <button id="btn-post-task" class="btn btn-accent">+ Post Task</button>
+    <div class="h-right">
+      <button id="btn-connect-wallet" class="btn-wallet">Connect Wallet</button>
+      <button id="btn-post-task" class="btn-post">+ Post</button>
     </div>
   </header>
 
-  <div class="stats-bar">
-    <div class="stat">
-      <span class="stat-value" id="stat-tasks">0</span>
-      <span class="stat-label">Total Tasks</span>
+  <!-- Balance bar (only shown when wallet connected) -->
+  <div id="balance-bar" style="display:none;">
+    <span class="bal-label">Wallet</span>
+    <span class="bal-item"><span class="bal-val" id="bal-sbtc">—</span> sBTC</span>
+    <span class="bal-sep">·</span>
+    <span class="bal-item"><span class="bal-val" id="bal-usdcx">—</span> USDCx</span>
+    <span class="bal-sep">·</span>
+    <span class="bal-item cap-item" id="bal-cap">Loading…</span>
+  </div>
+
+  <!-- Left Sidebar — nav only -->
+  <aside id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">View</div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-view="tasks">Tasks</button>
+        <button class="nav-btn" data-view="bids">Bids</button>
+        <button class="nav-btn" data-view="payments">Payments</button>
+        <button class="nav-btn" data-view="molbots">Molbots</button>
+        <button class="nav-btn" data-view="activity">Activity</button>
+      </nav>
     </div>
-    <div class="stat">
-      <span class="stat-value" id="stat-active">0</span>
-      <span class="stat-label">Active</span>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <button id="btn-register-molbot" class="nav-btn">Register Molbot</button>
+      <button id="btn-faucet" class="nav-btn faucet-btn" title="Claim 1 sBTC + 100 USDCx (testnet)">⛽ Faucet</button>
     </div>
-    <div class="stat">
-      <span class="stat-value" id="stat-volume">0.00</span>
-      <span class="stat-label">USDCx Volume</span>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="app-main">
+
+    <!-- Tasks View -->
+    <div id="view-tasks" class="view active-view">
+      <div class="view-header">
+        <h1 class="view-title">Task Board</h1>
+        <div class="filter-row">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="open">Open</button>
+          <button class="filter-btn" data-filter="assigned">Assigned</button>
+          <button class="filter-btn" data-filter="submitted">Submitted</button>
+          <button class="filter-btn" data-filter="completed">Completed</button>
+          <button class="filter-btn" data-filter="expired">Expired</button>
+        </div>
+      </div>
+      <div class="card-list" id="task-list">
+        <div class="empty-state">Loading tasks…</div>
+      </div>
     </div>
-    <div class="stat">
-      <span class="stat-value" id="stat-staked">0.00</span>
-      <span class="stat-label">sBTC Staked</span>
+
+    <!-- Bids View -->
+    <div id="view-bids" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Live Bids</h1>
+        <span class="count-badge" id="bid-count">0</span>
+      </div>
+      <div class="card-list" id="bid-list">
+        <div class="empty-state">No bids yet</div>
+      </div>
     </div>
-    <div class="stat">
-      <span class="stat-value" id="stat-molbots">0</span>
-      <span class="stat-label">Molbots</span>
+
+    <!-- Payments View -->
+    <div id="view-payments" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Payments</h1>
+        <span class="count-badge" id="payment-count">0</span>
+      </div>
+      <div class="card-list" id="payment-list">
+        <div class="empty-state">No payments yet</div>
+      </div>
+    </div>
+
+    <!-- Molbots View -->
+    <div id="view-molbots" class="view">
+      <div class="view-header">
+        <h1 class="view-title">Molbot Reputation</h1>
+      </div>
+      <div class="card-list" id="molbot-list">
+        <div class="empty-state">No molbots registered</div>
+      </div>
+    </div>
+
+    <!-- Activity View -->
+    <div id="view-activity" class="view">
+      <div class="view-header">
+        <h1 class="view-title">On-Chain Activity</h1>
+        <button id="btn-refresh-activity" class="filter-btn">Refresh</button>
+      </div>
+      <div id="activity-list" class="card-list">
+        <div class="empty-state">Loading…</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Fixed Footer -->
+  <footer id="app-footer">
+    <div class="footer-left">
+      <span class="sdot" id="dot-db"  title="Supabase DB"></span>
+      <span class="sdot" id="dot-api" title="API"></span>
+      <span class="sdot" id="dot-net" title="Stacks RPC"></span>
+      <span id="footer-status">Connecting…</span>
+    </div>
+    <span id="footer-wallet"></span>
+  </footer>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Wallet fallback panel (only shown if auto-connect fails) -->
+  <div id="wallet-fallback" style="display:none;">
+    <div id="wallet-fallback-inner">
+      <button id="wallet-fallback-close" class="wf-close">✕</button>
+      <div id="wallet-error" class="wallet-error" style="display:none;margin-bottom:10px;"></div>
+      <div class="wallet-manual-label" style="margin-bottom:8px;">Enter Stacks address</div>
+      <div class="wallet-manual-row">
+        <input type="text" id="manual-addr-input" placeholder="ST… or SP…" autocomplete="off" spellcheck="false">
+        <button id="btn-manual-addr" class="btn-manual">Use</button>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:12px;">
+        <a href="https://leather.io" target="_blank" rel="noopener" style="font-size:12px;color:#555;text-decoration:none;">Get Leather ↗</a>
+        <a href="https://www.xverse.app" target="_blank" rel="noopener" style="font-size:12px;color:#555;text-decoration:none;">Get Xverse ↗</a>
+      </div>
     </div>
   </div>
 
-  <main class="dashboard">
-    <!-- Panel 1: Task Board -->
-    <section class="panel" id="panel-tasks">
-      <div class="panel-header">
-        <h2>Task Board</h2>
-        <div class="panel-filters">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="open">Open</button>
-          <button class="filter-btn" data-filter="assigned">In Progress</button>
-          <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
-      </div>
-      <div class="panel-body" id="task-list">
-        <div class="empty-state">No tasks yet. Post the first task!</div>
-      </div>
-    </section>
-
-    <!-- Panel 2: Active Bids -->
-    <section class="panel" id="panel-bids">
-      <div class="panel-header">
-        <h2>Active Bids</h2>
-        <span class="badge" id="bid-count">0</span>
-      </div>
-      <div class="panel-body" id="bid-list">
-        <div class="empty-state">No active bids</div>
-      </div>
-    </section>
-
-    <!-- Panel 3: Payment History -->
-    <section class="panel" id="panel-payments">
-      <div class="panel-header">
-        <h2>Payment History</h2>
-        <span class="badge badge-green" id="payment-count">0</span>
-      </div>
-      <div class="panel-body" id="payment-list">
-        <div class="empty-state">No payments yet</div>
-      </div>
-    </section>
-
-    <!-- Panel 4: Molbot Reputation -->
-    <section class="panel" id="panel-reputation">
-      <div class="panel-header">
-        <h2>Molbot Reputation</h2>
-      </div>
-      <div class="panel-body" id="molbot-list">
-        <div class="empty-state">No molbots registered</div>
-      </div>
-    </section>
-  </main>
+  <!-- Keep these hidden dummy elements so app.js event wiring doesn't break -->
+  <div style="display:none">
+    <div id="modal-wallet"></div>
+    <button id="modal-wallet-close"></button>
+    <button id="btn-leather"></button>
+    <button id="btn-xverse"></button>
+  </div>
 
   <!-- Post Task Modal -->
   <div class="modal-overlay" id="modal-post-task" style="display:none;">
     <div class="modal">
-      <div class="modal-header">
-        <h3>Post New Task</h3>
-        <button class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-head">
+        <span class="modal-title">Post Task</span>
+        <button class="modal-x" id="modal-close">✕</button>
       </div>
       <form id="form-post-task">
         <div class="form-group">
           <label>Title</label>
-          <input type="text" id="task-title" placeholder="e.g. Generate market analysis report" required maxlength="64">
+          <input type="text" id="task-title" placeholder="Describe the task in one line" required maxlength="64">
         </div>
         <div class="form-group">
           <label>Description</label>
-          <textarea id="task-description" placeholder="Describe the task requirements..." required maxlength="256"></textarea>
+          <textarea id="task-description" placeholder="Full requirements…" required maxlength="256"></textarea>
         </div>
         <div class="form-group">
-          <label>Required Skill</label>
+          <label>Skill</label>
           <select id="task-skill">
             <option value="content-generation">Content Generation</option>
             <option value="data-fetching">Data Fetching</option>
@@ -121,31 +191,100 @@
         <div class="form-row">
           <div class="form-group">
             <label>Reward (USDCx)</label>
-            <input type="number" id="task-reward" placeholder="1.00" step="0.01" min="0.01" required>
+            <input type="number" id="task-reward" placeholder="5.00" step="0.01" min="0.01" required>
           </div>
           <div class="form-group">
-            <label>Required Stake (sBTC)</label>
-            <input type="number" id="task-stake" placeholder="1.0" step="0.1" min="1.0" required>
+            <label>Stake (sBTC) — min 1.0</label>
+            <input type="number" id="task-stake" placeholder="1.0" step="0.1" min="1.0" value="1.0" required>
           </div>
         </div>
         <div class="form-group">
-          <label>Deadline (blocks from now)</label>
-          <input type="number" id="task-deadline" value="100" min="10" required>
+          <label>Deadline (blocks)</label>
+          <input type="number" id="task-deadline" value="144" min="10" required>
         </div>
-        <button type="submit" class="btn btn-accent btn-full">Post Task &amp; Escrow USDCx</button>
+        <button type="submit" class="btn-submit">Post &amp; Escrow USDCx</button>
       </form>
     </div>
   </div>
 
-  <!-- Event Log -->
-  <div class="event-log" id="event-log">
-    <div class="event-log-header">
-      <span>Live Events</span>
-      <button class="btn-sm" id="btn-toggle-log">▼</button>
+  <!-- Bid Modal -->
+  <div class="modal-overlay" id="modal-place-bid" style="display:none;">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-title">Place Bid</span>
+        <button class="modal-x" id="modal-bid-close">✕</button>
+      </div>
+      <form id="form-place-bid">
+        <input type="hidden" id="bid-task-id">
+        <input type="hidden" id="bid-stake-amount">
+        <input type="hidden" id="bid-on-chain-id">
+        <div id="bid-onchain-warn" style="display:none;padding:8px 12px;background:#1a1200;border:1px solid #f2c94c;border-radius:6px;color:#f2c94c;font-size:12px;margin-bottom:12px;">
+          ⚠ This task was not posted via contract. Post a new task using the + Post button to bid on-chain.
+        </div>
+        <div class="form-group">
+          <label>Stake Required</label>
+          <input type="text" id="bid-stake-display" readonly>
+        </div>
+        <div class="form-group">
+          <label>Bid Price (USDCx)</label>
+          <input type="number" id="bid-price" placeholder="4.50" step="0.01" min="0.01" required>
+        </div>
+        <button type="submit" class="btn-submit">Bid &amp; Lock sBTC</button>
+      </form>
     </div>
-    <div class="event-log-body" id="event-log-body"></div>
   </div>
 
+  <!-- Submit Work Modal -->
+  <div class="modal-overlay" id="modal-submit-work" style="display:none;">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-title">Submit Work</span>
+        <button class="modal-x" id="modal-submit-close">✕</button>
+      </div>
+      <form id="form-submit-work">
+        <input type="hidden" id="submit-task-id">
+        <div class="form-group">
+          <label>Task</label>
+          <input type="text" id="submit-task-display" readonly>
+        </div>
+        <div class="form-group">
+          <label>Proof hash / artifact URL</label>
+          <textarea id="submit-proof" placeholder="ipfs://... or sha256:..." required maxlength="256"></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Submit Work</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Molbot Modal -->
+  <div class="modal-overlay" id="modal-register-molbot" style="display:none;">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-title">Register Molbot</span>
+        <button class="modal-x" id="modal-reg-close">✕</button>
+      </div>
+      <form id="form-register-molbot">
+        <div class="form-group">
+          <label>Stacks Address</label>
+          <input type="text" id="reg-address" placeholder="ST…" required>
+        </div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="reg-name" placeholder="e.g. ContentBot">
+        </div>
+        <div class="form-group">
+          <label>Skill</label>
+          <select id="reg-skill">
+            <option value="content-generation">Content Generation</option>
+            <option value="data-fetching">Data Fetching</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-submit">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/stacks-connect.js" defer></script>
   <script src="js/app.js"></script>
 </body>
 </html>

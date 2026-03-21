@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     await db.incrementBidCount(body.task_id)
     await db.updateMolbotStaked(body.bidder, stakeAmount)
     await db.incrementBlock()
-    await db.createPayment(body.task_id, body.bidder, 'contract:task-registry', stakeAmount, 'sBTC', 'escrow')
+    await db.createPayment(body.task_id, body.bidder, 'contract:registry', stakeAmount, 'sBTC', 'escrow')
     const bid = await db.getBid(bidId)
     return NextResponse.json(bid)
   } catch (e: any) {

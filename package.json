@@ -4,20 +4,29 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "bundle": "npx esbuild node_modules/@stacks/connect/dist/index.mjs --bundle --format=iife --global-name=StacksConnect --outfile=public/js/stacks-connect.js --minify --log-level=error",
+    "prebuild": "npm run bundle",
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs"
   },
   "dependencies": {
+    "@stacks/connect": "^8.2.6",
+    "@stacks/network": "^7.3.1",
+    "@stacks/wallet-sdk": "^7.2.0",
     "@supabase/supabase-js": "^2.99.3",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "next": "^16.2.0",
+    "pg": "^8.20.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "sats-connect": "^4.2.1"
   },
   "devDependencies": {
     "@hirosystems/clarinet-sdk": "^2.3.2",
-    "@stacks/transactions": "^6.12.0",
+    "@stacks/transactions": "^6.17.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

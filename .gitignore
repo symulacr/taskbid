@@ -60,3 +60,7 @@ DEPLOYER_WALLET.txt
 settings/Testnet.toml
 settings/Devnet.toml
 tmp/
+SUPABASE_ACCESS_TOKEN.txt
+
+# Bundled wallet library (built at deploy time)
+public/js/stacks-connect.js

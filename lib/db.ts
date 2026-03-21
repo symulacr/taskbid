@@ -12,6 +12,7 @@ const sb = () => getSupabase()
 export async function createTask(req: {
   poster: string; title: string; description: string; skill_required: string
   reward_amount: number; required_stake: number; deadline_blocks: number
+  on_chain_task_id?: number
 }, currentBlock: number) {
   const { data, error } = await sb().from('tasks').insert({
     poster: req.poster, title: req.title, description: req.description,
@@ -19,6 +20,7 @@ export async function createTask(req: {
     required_stake: req.required_stake,
     deadline: currentBlock + req.deadline_blocks,
     status: 0, created_at: currentBlock, bid_count: 0,
+    on_chain_task_id: req.on_chain_task_id ?? null,
   }).select('id').single()
   if (error) throw error
   return data.id as number
@@ -185,11 +187,42 @@ export async function getStats() {
 
 // ── Seed ──────────────────────────────────────────────────────────────────
 
+// USDCx uses 6 decimal places (1 USDCx = 1_000_000 micro-USDCx)
+// sBTC uses 8 decimal places (1 sBTC = 100_000_000 sats)
+
 export async function seedDemoData() {
+  const client = sb()
+
+  // Wipe in FK-safe order (children first)
+  await client.from('payment_records').delete().neq('id', 0)
+  await client.from('bids').delete().neq('id', 0)
+  await client.from('tasks').delete().neq('id', 0)
+  await client.from('molbot_profiles').delete().neq('address', '')
+
   const molbot1 = process.env.MOLBOT1_ADDRESS ?? 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5'
   const molbot2 = process.env.MOLBOT2_ADDRESS ?? 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG'
+  const poster  = 'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC'
+
+  // Register molbots
   await registerMolbot(molbot1, 'content-generation', 1, 'ContentBot')
-  await registerMolbot(molbot2, 'data-fetching', 1, 'DataBot')
+  await registerMolbot(molbot2, 'data-fetching',       1, 'DataBot')
+
+  // Seed an open task so the board isn't empty
+  // $5.00 USDCx reward, 0.001 sBTC required stake
+  const REWARD = 5_000_000       // $5.00 USDCx
+  const STAKE  = 100_000         // 0.001 sBTC
+  const block  = await getBlockHeight()
+
+  const { data: task, error } = await client.from('tasks').insert({
+    poster, title: 'Summarise Stacks Q1 2025 ecosystem activity',
+    description: 'Write a 300-word neutral summary of notable Stacks chain events in Q1 2025.',
+    skill_required: 'content-generation',
+    reward_amount: REWARD, required_stake: STAKE,
+    deadline: block + 144, status: 0, created_at: block, bid_count: 0,
+  }).select('id').single()
+  if (error) throw error
+
+  await createPayment(task.id, poster, 'contract:registry', REWARD, 'USDCx', 'escrow')
 }
 
 export { getBlockHeight, incrementBlock }
